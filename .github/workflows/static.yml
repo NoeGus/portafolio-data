@@ -31,6 +31,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate site entrypoint
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path("index.html")
+          content = index.read_text(encoding="utf-8").strip()
+
+          if not content:
+              raise SystemExit("index.html must not be empty")
+
+          if "<html" not in content.lower():
+              raise SystemExit("index.html must contain HTML markup")
+          PY
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
